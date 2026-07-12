@@ -1,0 +1,17 @@
+# Generated outputs (codegen/*.js) — collapsed in PR diffs; review the source
+# data instead (tokens.js, codegen/structure-def.js, the app's app-tokens.js).
+src/Tebru/Theme/Border.elm linguist-generated
+src/Tebru/Theme/Elevation.elm linguist-generated
+src/Tebru/Theme/MaxWidth.elm linguist-generated
+src/Tebru/Theme/Radius.elm linguist-generated
+src/Tebru/Theme/Space.elm linguist-generated
+src/Tebru/Theme/Structure.elm linguist-generated
+src/Tebru/Theme/Surface.elm linguist-generated
+src/Tebru/Theme/Text.elm linguist-generated
+src/Tebru/Theme/Transition.elm linguist-generated
+src/Tebru/Theme/Typography.elm linguist-generated
+src/Tebru/Box/GridCols.elm linguist-generated
+src/Tebru/Icon/Geometry.elm linguist-generated
+generated.css linguist-generated
+palette.template.css linguist-generated
+utilities.css linguist-generated

@@ -1,0 +1,26 @@
+/* Overlap theme — the package's ONE plain-CSS bundle entry. No Tailwind
+   anywhere: the utilities are emitted by the package's own codegen
+   (codegen/emit-css.js) from the closed class inventory, and this file just
+   assembles the pieces:
+
+     - the cascade-layer order statement (properties lowest, utilities highest),
+     - the vendored preflight reset (into layer `base`),
+     - the token variable registrations (generated.css, layer `theme`),
+     - the emitted utility classes (utilities.css, layer `utilities` + the
+       --tw-* channel machinery),
+     - the hand-written component CSS (components.css: animations + skeleton).
+
+   A consumer imports THIS file plus its own palette (its filled-in copy of
+   palette.template.css) — either through any bundler that flattens @import,
+   or pre-flattened with `node codegen/bundle-css.js theme.css out.css`.
+
+   An APP WITH ITS OWN EXTENSION TOKENS (like Overlap) does NOT import this
+   file: it emits a MERGED utilities file (emit-css.js <app-tokens.js>) and
+   assembles the same pieces itself minus utilities.css — see the Overlap
+   app's static/styles.css. */
+@layer properties;
+@layer theme, base, components, utilities;
+@import "./preflight.css" layer(base);
+@import "./generated.css";
+@import "./utilities.css";
+@import "./components.css";

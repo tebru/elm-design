@@ -1,0 +1,50 @@
+[
+  {
+    "command": ["watchexec", "-e", "elm", "-w", "src/Tebru/Component", "-w", "src/Tebru/Box.elm", "-w", "src/Tebru/Icon.elm", "-w", "src/Tebru/Theme/Config.elm", "-w", "src/Tebru/Theme/Spacing.elm", "-w", "tests", "--", "npm", "run", "--silent", "format:fix"],
+    "title": "Format Elm (hand-written only)",
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "Command was successful": ["✅", "+"],
+      "Processing": ["⏳", "S"],
+      "Error": ["🚨", "E"]
+    }
+  },
+  {
+    "command": ["watchexec", "-e", "js", "-w", "tokens.js", "-w", "codegen", "--", "npm", "run", "--silent", "gen"],
+    "title": "Gen (Elm tokens + inventory + utilities.css)",
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "Command was successful": ["✅", "+"],
+      "Command exited with": ["🚨", "E"]
+    }
+  },
+  {
+    "command": ["watchexec", "-e", "elm", "-w", "src", "-w", "tests", "--", "npx", "elm-test"],
+    "title": "Elm Test",
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "Compiling": ["⏳", "S"],
+      "Command exited with": ["🚨", "E"],
+      "Command was successful": ["✅", "+"]
+    }
+  },
+  {
+    "command": ["watchexec", "-e", "js,elm,json", "-w", "codegen", "--", "npm", "run", "--silent", "test:codegen"],
+    "title": "Codegen Tests",
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "Command was successful": ["✅", "+"],
+      "Command exited with": ["🚨", "E"]
+    }
+  },
+  {
+    "command": ["npm", "run", "--silent", "lint", "--", "--watch"],
+    "title": "Elm Review",
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "ELM-REVIEW ERROR": ["🚨", "E"],
+      "I found no errors!": ["✅", "0"],
+      "I found no more errors!": ["✅", "0"]
+    }
+  }
+]

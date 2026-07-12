@@ -1,0 +1,134 @@
+/* components.css — the package's HAND-WRITTEN component CSS: the rules its own
+   components consume via addRaw that are not utility classes. Imported by
+   theme.css; an app that assembles its own bundle (because it emits a MERGED
+   utilities file) imports this directly. */
+
+/* Component animations — each `@keyframes` is paired with an `.animate-*`
+   utility consumed via addRaw by the package's own components (Overlay:
+   modal-enter/backdrop-fade, Dropdown: dropdown-enter, Notification:
+   slide-down). They live HERE, not in the consuming app, so every consumer
+   gets the animations its components rely on. */
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown enter — scale + slight slide-down + fade, anchored at the
+   top edge so the popup grows out of its trigger rather than popping
+   from its own center. */
+@keyframes dropdownEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-modal-enter {
+    animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-backdrop-fade {
+    animation: backdropFade 0.2s ease-out forwards;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+
+  .animate-dropdown-enter {
+    animation: dropdownEnter 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top;
+  }
+}
+
+/* Inline Lucide icons — Tebru.Icon emits `lucide-icon` on every icon's
+   wrapping span, so the rule lives HERE (package code emits the class, the
+   package ships the rule): 1em square, baseline-tucked like the old font
+   glyphs (FontAwesome used the same -0.125em). */
+@layer utilities {
+  .lucide-icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: -0.125em;
+  }
+}
+
+/* Skeleton shimmer — consumed via addRaw by Tebru.Component.Skeleton
+   (`skeleton` / `skeleton-dark` moving-gradient classes + the fixed
+   `skeleton-narrow|medium|wide` line-width modifiers). They live HERE so every
+   consumer gets working skeletons. Colors resolve through ENGINE contract vars
+   only (--border-default / --surface-page / --surface-inverse /
+   --surface-inverse-active — see palette.template.css); the consuming app
+   supplies the values. Deliberately UNLAYERED (like the rules were in the
+   app stylesheet they moved from) so the shorthand `background` beats the
+   @layer'd bg-* utilities Skeleton composes alongside the shimmer class. */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--border-default) 0%,
+    var(--surface-page) 50%,
+    var(--border-default) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* Dark variant for dark surface/navigation areas: inverse surface base with
+   the inverse-ACTIVE shade as the shimmer midpoint. */
+.skeleton-dark {
+  background: linear-gradient(
+    90deg,
+    var(--surface-inverse) 0%,
+    var(--surface-inverse-active) 50%,
+    var(--surface-inverse) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton-narrow { width: 35%; }
+.skeleton-medium { width: 55%; }
+.skeleton-wide   { width: 75%; }
+
+/* Component.Slider brand accent — native `<input type="range">` thumb/track
+   tint through the engine's brand contract var, so every consumer's sliders
+   render on-brand without a class (Slider renders a bare range input; the
+   element selector keeps the component headless). */
+input[type="range"] {
+  accent-color: var(--surface-brand);
+}

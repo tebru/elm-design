@@ -1,0 +1,15 @@
+# Elm build caches (package root, review/, tests runs)
+elm-stuff/
+
+# Node dev tooling (codegen deps + elm-test/format/review; see package.json —
+# package-lock.json IS committed for reproducible tooling)
+node_modules/
+
+# devbox local state
+.devbox/
+
+# IDE per-user state
+.idea/
+
+# OS noise
+.DS_Store

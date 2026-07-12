@@ -1,0 +1,23 @@
+{
+  "name": "@tebru/elm-design",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dev-tooling manifest for the tebru/elm-design Elm design system. Elm consumers never install this — they consume the committed Elm modules + CSS artifacts (source-directories / git submodule). This file only pins the codegen/test/lint toolchain.",
+  "scripts": {
+    "gen": "node codegen/generate.js tokens.js && node codegen/emit-css.js",
+    "icons:gen": "node codegen/generate-icons.js",
+    "test": "elm-test && npm run --silent test:codegen",
+    "test:elm": "elm-test",
+    "test:codegen": "node --test codegen/generate.test.js codegen/generate-inventory.test.js codegen/emit-css.test.js codegen/bundle-css.test.js codegen/check-bespoke-sync.test.js codegen/check-palette.test.js codegen/generate-icons.test.js",
+    "lint": "elm-review",
+    "format": "elm-format src/Tebru/Component/ src/Tebru/Box.elm src/Tebru/Icon.elm src/Tebru/Theme/Config.elm src/Tebru/Theme/Spacing.elm tests/ --validate",
+    "format:fix": "elm-format src/Tebru/Component/ src/Tebru/Box.elm src/Tebru/Icon.elm src/Tebru/Theme/Config.elm src/Tebru/Theme/Spacing.elm tests/ --yes",
+    "watch": "npx run-pty run-pty-watch.json"
+  },
+  "devDependencies": {
+    "elm-format": "^0.8.8",
+    "elm-review": "^2.13.4",
+    "elm-test": "^0.19.1-revision16",
+    "lucide-static": "1.24.0"
+  }
+}
