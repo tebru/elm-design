@@ -1,7 +1,8 @@
 # tebru/elm-design — Overlap design system (single package)
 
-One Elm package (`elm.json` name: `tebru/elm-design`), all modules namespaced `Tebru.*`. Vendored into the app as
-`frontend/packages/elm-design` (a symlink to this directory — edits through either path hit the same files). Four layers:
+One Elm package (`elm.json` name: `tebru/elm-design`), all modules namespaced `Tebru.*`. Repo: `github.com/tebru/elm-design`;
+consumed by the Overlap app as the git submodule `frontend/packages/elm-design` (a real checkout — commit + push package
+changes from inside it, then bump the submodule pointer in the app). Four layers:
 
 1. **Theme** — the styling engine `Tebru.Theme.Config` (opaque builder) plus token modules. Hand-written: `Config.elm`,
    `Spacing.elm` (geometry combinators). Generated from `tokens.js`: the 9 token modules `Border`, `Elevation`, `MaxWidth`,
@@ -47,7 +48,7 @@ lucide-static pinned in `package.json`). Then, from this directory:
   own `node_modules` now; no NODE_PATH needed).
 
 The consuming app additionally drives the same scripts through its own npm aliases (`theme:gen`, `css:build`, …)
-via the `packages/elm-design` symlink.
+against the `packages/elm-design` submodule checkout.
 
 ## Codegen (scripts live in `codegen/`)
 
