@@ -1,4 +1,4 @@
-module Tebru.Component.Input exposing (Input, Type(..), chromeless, default, onInput, view, withAutofocus, withDisabled, withId, withLabel, withPlaceholder, withStyle, withType, withValue)
+module Tebru.Component.Input exposing (Input, Type(..), chromeless, default, onChange, onInput, view, withAutofocus, withDisabled, withId, withLabel, withPlaceholder, withStyle, withType, withValue)
 
 {-| Headless Input primitive.
 
@@ -14,6 +14,7 @@ No variant enums — border, radius, padding are overridable via `withStyle`.
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Json.Decode
 import Tebru.Box as Box
 import Tebru.Component.Text as Text
 import Tebru.Theme.Border as Border
@@ -75,6 +76,7 @@ type Input msg
         , value : Maybe String
         , inputType : Type
         , onInput : Maybe (String -> msg)
+        , onChange : Maybe (String -> msg)
         , style : Config Standard
         , disabled : Bool
         , id : Maybe String
@@ -88,7 +90,7 @@ Override any part via `withStyle`.
 -}
 default : Input msg
 default =
-    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, style = baseStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
+    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, onChange = Nothing, style = baseStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
 
 
 {-| Chromeless inline input — no Standard chrome (no border width, no fixed
@@ -99,7 +101,7 @@ overridable via `withStyle` — keeps the component headless.
 -}
 chromeless : Input msg
 chromeless =
-    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, style = chromelessStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
+    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, onChange = Nothing, style = chromelessStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
 
 
 {-| Default Standard-input styling — value-identical to the old
@@ -203,6 +205,16 @@ onInput handler (Input i) =
     Input { i | onInput = Just handler }
 
 
+{-| Fire on the `change` event — when the value is COMMITTED (field blurred,
+Enter, or a native picker dialog dismissed) rather than on every keystroke/
+drag. The native color input fires `input` continuously while dragging in
+the OS dialog; `onChange` is the hook for callers that persist the value.
+-}
+onChange : (String -> msg) -> Input msg -> Input msg
+onChange handler (Input i) =
+    Input { i | onChange = Just handler }
+
+
 withStyle : (Config Standard -> Config Standard) -> Input msg -> Input msg
 withStyle fn (Input i) =
     Input { i | style = fn i.style }
@@ -257,6 +269,14 @@ view (Input i) =
                 Nothing ->
                     []
 
+        onChangeAttr =
+            case i.onChange of
+                Just handler ->
+                    [ Html.Events.on "change" (Json.Decode.map handler Html.Events.targetValue) ]
+
+                Nothing ->
+                    []
+
         disabledAttr =
             [ Html.Attributes.disabled i.disabled ]
 
@@ -273,7 +293,7 @@ view (Input i) =
 
         inputEl =
             Html.input
-                (classAttr :: Config.toStyleAttributes i.style ++ typeAttr :: disabledAttr ++ idAttr ++ autofocusAttr ++ placeholderAttr ++ valueAttr ++ onInputAttr)
+                (classAttr :: Config.toStyleAttributes i.style ++ typeAttr :: disabledAttr ++ idAttr ++ autofocusAttr ++ placeholderAttr ++ valueAttr ++ onInputAttr ++ onChangeAttr)
                 []
     in
     case i.label of
