@@ -167,7 +167,7 @@ module.exports = {
       steps: {
         Xxs:  { key: "xxs",  value: "0.625rem" },
         Xs:   { key: "xs",   value: "0.75rem",  lineHeight: "calc(1 / 0.75)" },
-        Sm:   { key: "sm",   value: "0.875rem", lineHeight: "calc(1.25 / 0.875)" },
+        Sm:   { key: "sm",   value: "0.84375rem", lineHeight: "calc(1.25 / 0.84375)" },
         Base: { key: "base", value: "1rem",     lineHeight: "calc(1.5 / 1)" },
         Lg:   { key: "lg",   value: "1.125rem", lineHeight: "calc(1.75 / 1.125)" },
         Xl:   { key: "xl",   value: "1.25rem",  lineHeight: "calc(1.75 / 1.25)" },

@@ -254,6 +254,7 @@ viewItem allItemsStyle item =
         |> Layout.withOnClick item.onClick
         |> Layout.withStyle
             (Text.withText Text.Default
+                >> Typography.withFontSize Typography.Sm
                 >> Typography.withFontWeight Typography.Normal
                 >> Radius.withRadius Radius.None
                 >> Spacing.withPadding (Spacing.xy Lg Sm)

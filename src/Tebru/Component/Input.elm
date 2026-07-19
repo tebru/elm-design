@@ -28,14 +28,6 @@ import Tebru.Theme.Transition as Transition
 import Tebru.Theme.Typography as Typography
 
 
-{-| Fixed control height (34px) — a bespoke dimension off the spacing scale, so it
-stays raw behind this named constant (bespoke).
--}
-controlHeight : Config tag -> Config tag
-controlHeight =
-    Config.addRaw "h-[34px]"
-
-
 {-| Placeholder text color (legacy PlaceholderMuted). The `placeholder:` pseudo has
 no token channel, so it stays raw behind this named constant (bespoke).
 -}
@@ -128,7 +120,6 @@ baseStyle =
         |> Structure.withBorderWidth Structure.BorderThin
         |> Structure.withDisplay Structure.Block
         |> Structure.withWidth Structure.SizeFull
-        |> controlHeight
         -- subtle elevation (old ShadowSubtle; Elevation.Xs resolves to the same value) + transition
         |> Elevation.withElevation Elevation.Xs
         |> Transition.withTransition Transition.TransitionShadow

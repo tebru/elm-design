@@ -78,21 +78,10 @@ baseStyle =
         |> Structure.withJustify Structure.JustifyCenter
         |> Structure.withCursor Structure.CursorPointer
         |> Structure.withDisplay Structure.InlineFlex
-        |> controlHeight
         |> Spacing.withGap Sm
         |> Transition.withTransition Transition.TransitionColors
         |> Transition.withDuration Transition.DurationNormal
         |> disabledTreatment
-
-
-{-| Standard control height. `h-[34px]` is an off-scale fixed pixel size with no
-token channel. Set under the keyed `"height"` channel (not `addRaw`) so a preset
-can override it — e.g. taller form controls, or `h-auto` for a link-styled
-button.
--}
-controlHeight : Config Standard -> Config Standard
-controlHeight =
-    Config.set "height" "h-[34px]"
 
 
 {-| Standard disabled treatment: dim, ignore pointer events, default cursor.
