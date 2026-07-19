@@ -206,9 +206,12 @@ toastOverlay opts =
                             |> Structure.withBorderWidth Structure.BorderThin
                             |> Radius.withRadius Radius.Lg
                             |> Spacing.withPadding (Spacing.xy Lg Md)
-                            -- Re-seed the toast row gap: this wholesale `\_ ->` replacement
-                            -- discards the constructor-seeded `gap-md` along with the base style.
+                            -- Re-seed the toast row's gap AND flex display: this wholesale
+                            -- `\_ ->` replacement discards both constructor-seeded classes
+                            -- (only the `flex-row` container class survives it — without
+                            -- `flex` the card goes block and the dismiss x wraps).
                             |> Spacing.withGap Md
+                            |> Structure.withDisplay Structure.Flex
                             |> Structure.withAlign Structure.AlignCenter
                             |> Elevation.withElevation Elevation.Xl
                             |> Structure.withPointerEvents Structure.PointerAuto
