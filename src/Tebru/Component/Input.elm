@@ -74,6 +74,7 @@ type Type
     = Text
     | Email
     | Password
+    | Color
 
 
 type Input msg
@@ -227,6 +228,9 @@ typeToString t =
 
         Password ->
             "password"
+
+        Color ->
+            "color"
 
 
 view : Input msg -> Html msg
