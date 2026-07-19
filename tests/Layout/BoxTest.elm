@@ -108,19 +108,27 @@ suite =
                     |> Event.simulate (Event.custom "scroll" (Encode.object []))
                     |> Event.expect ()
 
-        -- THE FIREFOX DRAG LESSON: withOnMouseDown MUST preventDefault. Without
-        -- it the browser starts a text selection on mousedown and Firefox then
-        -- stops firing mouseenter for the drag's duration, breaking
-        -- drag-to-paint / move / resize in every consumer (Chrome is lenient;
-        -- Firefox is not). These pins make that regression loud.
-        , test "withOnMouseDown preventDefaults (Firefox drag-to-paint)" <|
+        -- THE FIREFOX DRAG LESSON: drag interactions MUST preventDefault on
+        -- mousedown. Without it the browser starts a text selection and
+        -- Firefox then stops firing mouseenter for the drag's duration,
+        -- breaking drag-to-paint / move / resize in every consumer (Chrome is
+        -- lenient; Firefox is not). These pins make that regression loud.
+        , test "withOnMouseDownPreventDefault preventDefaults (Firefox drag-to-paint)" <|
+            \_ ->
+                Layout.row Sm []
+                    |> Layout.withOnMouseDownPreventDefault ()
+                    |> Layout.view
+                    |> Query.fromHtml
+                    |> Event.simulate Event.mouseDown
+                    |> Event.expectPreventDefault
+        , test "withOnMouseDown is a plain listener (no preventDefault)" <|
             \_ ->
                 Layout.row Sm []
                     |> Layout.withOnMouseDown ()
                     |> Layout.view
                     |> Query.fromHtml
                     |> Event.simulate Event.mouseDown
-                    |> Event.expectPreventDefault
+                    |> Event.expectNotPreventDefault
         , test "withOnMouseUp does not preventDefault (proves the flag is observable, not always-on)" <|
             \_ ->
                 Layout.row Sm []

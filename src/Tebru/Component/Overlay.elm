@@ -16,6 +16,11 @@ its own panel for the relative positioning, z-index, and entrance animation.
 When closed, renders `Html.text ""`. When open, a flex container holds two
 siblings: the backdrop (clicking fires `onClose`) and `content`.
 
+Deliberately minimal: the container and backdrop expose no style channels —
+as the substrate under Modal/Dropdown/Palette it stays easiest to reason
+about with few knobs (placement and edge padding are the only ones). Style
+slots get added when a real consumer needs one, not speculatively.
+
 
 # Build & configure
 

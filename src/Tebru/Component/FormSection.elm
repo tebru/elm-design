@@ -1,4 +1,4 @@
-module Tebru.Component.FormSection exposing (FormSection, default, view, withStyle)
+module Tebru.Component.FormSection exposing (FormSection, default, view, withHeaderStyle, withStyle)
 
 {-| Headless FormSection primitive — a titled group of form rows.
 
@@ -9,7 +9,8 @@ module Tebru.Component.FormSection exposing (FormSection, default, view, withSty
         |> FormSection.view
 
 Composes `Component.SectionHeader` + a `Layout.stack` of rows.
-Override the section header style via `withStyle`.
+`withStyle` styles the section root (like every other component);
+`withHeaderStyle` styles the header caption.
 
 -}
 
@@ -27,6 +28,7 @@ type FormSection msg
         { title : String
         , rows : List (Html msg)
         , headerStyle : Config Standard -> Config Standard
+        , style : Config Standard -> Config Standard
         }
 
 
@@ -34,13 +36,20 @@ type FormSection msg
 -}
 default : { title : String, rows : List (Html msg) } -> FormSection msg
 default opts =
-    FormSection { title = opts.title, rows = opts.rows, headerStyle = identity }
+    FormSection { title = opts.title, rows = opts.rows, headerStyle = identity, style = identity }
 
 
-{-| Override the section header's Config.
+{-| Modify the section root's Config (the stack wrapping header + rows).
 -}
 withStyle : (Config Standard -> Config Standard) -> FormSection msg -> FormSection msg
 withStyle fn (FormSection s) =
+    FormSection { s | style = s.style >> fn }
+
+
+{-| Override the section header caption's Config.
+-}
+withHeaderStyle : (Config Standard -> Config Standard) -> FormSection msg -> FormSection msg
+withHeaderStyle fn (FormSection s) =
     FormSection { s | headerStyle = s.headerStyle >> fn }
 
 
@@ -67,4 +76,4 @@ view (FormSection s) =
         rowsGroup =
             Layout.stack Xl s.rows |> Layout.view
     in
-    Layout.stack Sm [ header, rowsGroup ] |> Layout.view
+    Layout.stack Sm [ header, rowsGroup ] |> Layout.withStyle s.style |> Layout.view

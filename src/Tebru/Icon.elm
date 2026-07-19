@@ -1,4 +1,4 @@
-module Tebru.Icon exposing (IconConfig, default, view, withStyle)
+module Tebru.Icon exposing (Icon, default, view, withStyle)
 
 {-| Theme-styled Lucide icon wrapper.
 
@@ -23,22 +23,22 @@ import Svg.Attributes as SA
 import Tebru.Theme.Config as Config exposing (Config, Standard)
 
 
-type IconConfig msg
-    = IconConfig { shapes : List (Svg.Svg msg), style : Config Standard }
+type Icon msg
+    = Icon { shapes : List (Svg.Svg msg), style : Config Standard }
 
 
-default : List (Svg.Svg msg) -> IconConfig msg
+default : List (Svg.Svg msg) -> Icon msg
 default shapes =
-    IconConfig { shapes = shapes, style = Config.default }
+    Icon { shapes = shapes, style = Config.default }
 
 
-withStyle : (Config Standard -> Config Standard) -> IconConfig msg -> IconConfig msg
-withStyle fn (IconConfig c) =
-    IconConfig { c | style = fn c.style }
+withStyle : (Config Standard -> Config Standard) -> Icon msg -> Icon msg
+withStyle fn (Icon c) =
+    Icon { c | style = fn c.style }
 
 
-view : IconConfig msg -> Html msg
-view (IconConfig c) =
+view : Icon msg -> Html msg
+view (Icon c) =
     Html.span
         (HA.class (String.join " " (List.filter ((/=) "") [ "lucide-icon", Config.toClasses c.style ]))
             :: Config.toStyleAttributes c.style

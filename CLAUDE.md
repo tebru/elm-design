@@ -29,6 +29,8 @@ changes from inside it, then bump the submodule pointer in the app). Four layers
    contract var the consumer defines (contract file: `palette.template.css`; the Overlap app's values live in `frontend/static/palette.css`).
 4. **The styling model**: design-language value → token + var (`tokens.js`); structural → typed enum (`Structure`);
    spacing geometry → composition (`Spacing`); one-off → component-local named constant (never a global token).
+   Behavioral/semantic enums (`Input.Type`, `Text.Tag`, `Box.Element`) are deliberately minimal and EXTEND ON DEMAND —
+   add a variant when a consumer needs it (as `Input.Color` was), never speculatively.
 5. **No commits** — the user manages version control. The git repository in this directory is user-managed: never commit, stage, or otherwise write to it.
 
 ## Commands (self-contained — this package has its own dev toolchain)

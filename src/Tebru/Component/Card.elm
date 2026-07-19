@@ -1,4 +1,4 @@
-module Tebru.Component.Card exposing (Card, default, view, withFooter, withHeader, withHoverable, withStyle)
+module Tebru.Component.Card exposing (Card, default, view, withFooter, withHeader, withHoverStyle, withHoverable, withStyle)
 
 {-| Headless Card primitive — a styled surface container with an optional
 header/footer + hover treatment.
@@ -15,16 +15,17 @@ header/footer + hover treatment.
         |> Card.view
 
 The default reproduces the legacy `Ui.Card`: card surface, a hairline border,
-large radius, large padding, and a subtle resting shadow. `withHoverable` adds
-the legacy hover treatment (border darken + soft lift shadow). No variant enums
-— surface, spacing, and the rest are overridable via `withStyle`.
+large radius, large padding, and a subtle resting shadow. `withHoverStyle` is
+the standard hover channel; `withHoverable` is the preset built on it (border
+darken + soft lift shadow). No variant enums — surface, spacing, and the rest
+are overridable via `withStyle`.
 
 -}
 
 import Html exposing (Html, text)
 import Tebru.Box as Layout
 import Tebru.Theme.Border as Border
-import Tebru.Theme.Config as Config exposing (Config, Standard)
+import Tebru.Theme.Config as Config exposing (Config, Hover, Standard)
 import Tebru.Theme.Elevation as Elevation
 import Tebru.Theme.Radius as Radius
 import Tebru.Theme.Space as Space exposing (Space(..))
@@ -48,7 +49,7 @@ type Card msg
         { children : List (Html msg)
         , header : Maybe { title : String, subtitle : Maybe String }
         , footer : Maybe (Html msg)
-        , hoverable : Bool
+        , hoverStyle : Maybe (Config Hover -> Config Hover)
         , style : Config Standard -> Config Standard
         }
 
@@ -62,7 +63,7 @@ default children =
         { children = children
         , header = Nothing
         , footer = Nothing
-        , hoverable = False
+        , hoverStyle = Nothing
         , style = baseStyle
         }
 
@@ -97,11 +98,24 @@ withFooter actions (Card c) =
     Card { c | footer = Just actions }
 
 
-{-| Enable the legacy hover treatment: darkened border + soft lift shadow.
+{-| Modify the card's hover style — the standard hover channel every
+hover-capable component exposes. Composes across calls.
+-}
+withHoverStyle : (Config Hover -> Config Hover) -> Card msg -> Card msg
+withHoverStyle fn (Card c) =
+    Card { c | hoverStyle = Just (Maybe.withDefault identity c.hoverStyle >> fn) }
+
+
+{-| Preset built on the hover channel: the legacy hover treatment (darkened
+border + soft lift shadow). `False` clears the whole hover channel.
 -}
 withHoverable : Bool -> Card msg -> Card msg
 withHoverable hoverable (Card c) =
-    Card { c | hoverable = hoverable }
+    if hoverable then
+        withHoverStyle (Border.withBorder Border.Hover >> liftShadow) (Card c)
+
+    else
+        Card { c | hoverStyle = Nothing }
 
 
 withStyle : (Config Standard -> Config Standard) -> Card msg -> Card msg
@@ -161,15 +175,12 @@ view (Card c) =
                 None
 
         hoverMod box_ =
-            if c.hoverable then
-                box_
-                    |> Layout.withHoverStyle
-                        (Border.withBorder Border.Hover
-                            >> liftShadow
-                        )
+            case c.hoverStyle of
+                Just hoverStyle ->
+                    box_ |> Layout.withHoverStyle hoverStyle
 
-            else
-                box_
+                Nothing ->
+                    box_
     in
     Layout.stack gap allChildren
         |> Layout.withElement Layout.Section

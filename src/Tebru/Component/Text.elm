@@ -29,7 +29,9 @@ import Tebru.Theme.Typography as Typography
 {-| The rendered element. `body` defaults to `Span` (inline, matching the old
 `Ui.Text.body`), `heading` to `H1` (matching the old `Ui.Text.heading1`). Use
 `withTag` to render a different semantic element while keeping the builder —
-e.g. `H3` for a section heading, `P` for a paragraph.
+e.g. `H3` for a section heading, `P` for a paragraph. Deliberately minimal —
+tags are added on demand when a consumer needs one, not speculatively; see the
+extend-on-demand policy in CLAUDE.md.
 -}
 type Tag
     = P

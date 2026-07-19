@@ -1,8 +1,9 @@
-module Tebru.Component.Tooltip exposing (Position(..), Tooltip, default, view, withStyle)
+module Tebru.Component.Tooltip exposing (Position(..), Tooltip, default, view, withPosition, withStyle)
 
 {-| Headless Tooltip primitive — target + positioned label bubble.
 
-    Tooltip.default Above { label = "Save document", target = saveIcon }
+    Tooltip.default { label = "Save document", target = saveIcon }
+        |> Tooltip.withPosition Below
         |> Tooltip.view
 
 Hover-gated by default: the bubble is hidden (`opacity-0`) until the wrapper is
@@ -45,16 +46,24 @@ type Tooltip msg
         }
 
 
-{-| Build a Tooltip. Position determines placement; `withStyle` overrides the bubble.
+{-| Build a Tooltip, positioned `Above` the target; `withPosition` moves it,
+`withStyle` overrides the bubble.
 -}
-default : Position -> { label : String, target : Html msg } -> Tooltip msg
-default position opts =
+default : { label : String, target : Html msg } -> Tooltip msg
+default opts =
     Tooltip
-        { position = position
+        { position = Above
         , label = opts.label
         , target = opts.target
         , bubbleStyle = baseBubbleStyle
         }
+
+
+{-| Where the bubble appears relative to the target (default `Above`).
+-}
+withPosition : Position -> Tooltip msg -> Tooltip msg
+withPosition position (Tooltip t) =
+    Tooltip { t | position = position }
 
 
 {-| Override the bubble's Config.

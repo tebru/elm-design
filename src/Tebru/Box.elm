@@ -26,6 +26,7 @@ module Tebru.Box exposing
     , withOnKeyDownPreventDefault
     , withOnKeyUp
     , withOnMouseDown
+    , withOnMouseDownPreventDefault
     , withOnMouseDownStopPropagation
     , withOnMouseEnter
     , withOnMouseLeave
@@ -66,6 +67,10 @@ type Layout kind msg
     = Box (BoxConfig msg)
 
 
+{-| The semantic tag a Box renders as (via `withElement`). Deliberately
+minimal — tags are added on demand when a consumer needs one, not
+speculatively; see the extend-on-demand policy in CLAUDE.md.
+-}
 type Element
     = Div
     | Span
@@ -245,6 +250,16 @@ withInlineStyle pairs =
     withStyle (Config.withInlineStyle pairs)
 
 
+{-| Attach a listener for any DOM event. Root of Box's event-modifier family.
+
+Naming convention: Box prefixes every event modifier `withOn*` because they are
+layout **modifiers** in a `|>` pipeline alongside `withStyle`/`withElement`;
+components name their event **slots** with bare verbs (`Button.onClick`,
+`Input.onInput`, `Slider.onChange`) because those fill a semantic slot in the
+component's config. Behavior-altering variants say so in the name:
+`*PreventDefault` / `*StopPropagation`.
+
+-}
 withOn : String -> Decode.Decoder msg -> Layout kind msg -> Layout kind msg
 withOn event decoder =
     appendAttr (Html.Events.on event decoder)
@@ -268,6 +283,14 @@ withOnDoubleClick msg =
     withOn "dblclick" (Decode.succeed msg)
 
 
+{-| Plain mousedown listener — no default suppression. For drag interactions
+you almost certainly want `withOnMouseDownPreventDefault` instead.
+-}
+withOnMouseDown : msg -> Layout kind msg -> Layout kind msg
+withOnMouseDown msg =
+    withOn "mousedown" (Decode.succeed msg)
+
+
 {-| Mousedown handler that also `preventDefault`s — this suppresses the browser's
 native text-selection (and drag-image) behavior that otherwise hijacks a custom
 drag. Without it, Firefox starts a text selection on mousedown and then stops
@@ -275,8 +298,8 @@ firing `mouseenter` for the duration, breaking drag-to-paint / move / resize
 (Chrome is lenient; Firefox is not). Matches the old `Ui.Layout` behavior, which
 used `preventDefaultOn "mousedown"` on every mousedown.
 -}
-withOnMouseDown : msg -> Layout kind msg -> Layout kind msg
-withOnMouseDown msg =
+withOnMouseDownPreventDefault : msg -> Layout kind msg -> Layout kind msg
+withOnMouseDownPreventDefault msg =
     withOnWithOptions "mousedown" { stopPropagation = False, preventDefault = True } (Decode.succeed msg)
 
 

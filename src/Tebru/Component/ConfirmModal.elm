@@ -134,11 +134,12 @@ withDisabled isDisabled (ConfirmModal c) =
 
 {-| Preset: render the confirm button on the danger surface, for destructive
 actions (delete group, leave group, remove member). Equivalent to the legacy
-`Button.Danger` confirm variant.
+`Button.Danger` confirm variant. Composes onto the current confirm style like
+every other modifier, so it is order-independent with `withConfirmStyle`.
 -}
 dangerConfirm : ConfirmModal msg -> ConfirmModal msg
 dangerConfirm (ConfirmModal c) =
-    ConfirmModal { c | confirmStyle = dangerConfirmStyle }
+    ConfirmModal { c | confirmStyle = c.confirmStyle >> dangerConfirmStyle }
 
 
 {-| Render the confirm modal.

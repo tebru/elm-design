@@ -1,4 +1,4 @@
-module Tebru.Component.List exposing (ComponentList, default, view, withDividers, withStyle)
+module Tebru.Component.List exposing (Items, default, view, withDividers, withStyle)
 
 {-| Headless List container primitive — a semantic `<ul>` that vertically stacks
 its items with a gap, with optional between-item dividers.
@@ -38,8 +38,8 @@ import Tebru.Theme.Spacing as Spacing
 import Tebru.Theme.Structure as Structure
 
 
-type ComponentList msg
-    = ComponentList
+type Items msg
+    = Items
         { items : List (Html msg)
         , dividers : Bool
         , style : Config Standard
@@ -48,9 +48,9 @@ type ComponentList msg
 
 {-| Vertical list with `gap-sm`, transparent container, dividers off.
 -}
-default : List (Html msg) -> ComponentList msg
+default : List (Html msg) -> Items msg
 default items =
-    ComponentList { items = items, dividers = False, style = baseStyle }
+    Items { items = items, dividers = False, style = baseStyle }
 
 
 {-| The old `Vertical StackS`: `flex flex-col gap-sm`. No surface/border/radius.
@@ -76,14 +76,14 @@ listReset =
 Matches the old `DividerBetween`; the divider draws in the engine's default
 border hairline (`border-border-default`, the `--border-default` contract var).
 -}
-withDividers : Bool -> ComponentList msg -> ComponentList msg
-withDividers on (ComponentList l) =
-    ComponentList { l | dividers = on }
+withDividers : Bool -> Items msg -> Items msg
+withDividers on (Items l) =
+    Items { l | dividers = on }
 
 
-withStyle : (Config Standard -> Config Standard) -> ComponentList msg -> ComponentList msg
-withStyle fn (ComponentList l) =
-    ComponentList { l | style = fn l.style }
+withStyle : (Config Standard -> Config Standard) -> Items msg -> Items msg
+withStyle fn (Items l) =
+    Items { l | style = fn l.style }
 
 
 {-| The old `DividerBetween` selector pair. The width/side (`border-b`) is a raw
@@ -97,8 +97,8 @@ dividerClass =
     "[&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-border-default"
 
 
-view : ComponentList msg -> Html msg
-view (ComponentList l) =
+view : Items msg -> Html msg
+view (Items l) =
     let
         styled =
             if l.dividers then

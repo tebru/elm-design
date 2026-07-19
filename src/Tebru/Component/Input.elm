@@ -61,7 +61,9 @@ disabledMuted =
     Config.addRaw "disabled:bg-surface-disabled disabled:cursor-not-allowed"
 
 
-{-| HTML input type.
+{-| HTML input type. Deliberately minimal — variants are added on demand when
+a consumer needs one (as `Color` was), not speculatively; see the
+extend-on-demand policy in CLAUDE.md.
 -}
 type Type
     = Text
