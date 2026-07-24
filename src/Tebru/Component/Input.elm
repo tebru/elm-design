@@ -1,4 +1,4 @@
-module Tebru.Component.Input exposing (Input, Type(..), chromeless, default, onChange, onInput, view, withAutofocus, withDisabled, withId, withLabel, withPlaceholder, withStyle, withType, withValue)
+module Tebru.Component.Input exposing (Input, Type(..), chromeless, default, onBlur, onChange, onInput, onKeyDownPreventDefault, view, withAutofocus, withDisabled, withId, withLabel, withPlaceholder, withStyle, withType, withValue)
 
 {-| Headless Input primitive.
 
@@ -79,6 +79,8 @@ type Input msg
         , inputType : Type
         , onInput : Maybe (String -> msg)
         , onChange : Maybe (String -> msg)
+        , onKeyDown : Maybe (String -> Maybe msg)
+        , onBlur : Maybe msg
         , style : Config Standard
         , disabled : Bool
         , id : Maybe String
@@ -92,7 +94,7 @@ Override any part via `withStyle`.
 -}
 default : Input msg
 default =
-    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, onChange = Nothing, style = baseStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
+    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, onChange = Nothing, onKeyDown = Nothing, onBlur = Nothing, style = baseStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
 
 
 {-| Chromeless inline input — no Standard chrome (no border width, no fixed
@@ -103,7 +105,7 @@ overridable via `withStyle` — keeps the component headless.
 -}
 chromeless : Input msg
 chromeless =
-    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, onChange = Nothing, style = chromelessStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
+    Input { placeholder = Nothing, value = Nothing, inputType = Text, onInput = Nothing, onChange = Nothing, onKeyDown = Nothing, onBlur = Nothing, style = chromelessStyle, disabled = False, id = Nothing, autofocus = False, label = Nothing }
 
 
 {-| Default Standard-input styling — value-identical to the old
@@ -217,6 +219,34 @@ onChange handler (Input i) =
     Input { i | onChange = Just handler }
 
 
+{-| Handle keydown by key name (`event.key`: `"Enter"`, `","`, `"Backspace"`,
+…). Returning `Just msg` fires it AND preventDefaults that keypress — so a
+committing Enter doesn't submit a wrapping form and a committing comma isn't
+typed; returning `Nothing` leaves the key completely untouched. Only the keys
+you handle are affected, hence the name.
+
+    Input.onKeyDownPreventDefault
+        (\key ->
+            if key == "Enter" || key == "," then
+                Just CommitChip
+
+            else
+                Nothing
+        )
+
+-}
+onKeyDownPreventDefault : (String -> Maybe msg) -> Input msg -> Input msg
+onKeyDownPreventDefault handler (Input i) =
+    Input { i | onKeyDown = Just handler }
+
+
+{-| Fire when the input loses focus.
+-}
+onBlur : msg -> Input msg -> Input msg
+onBlur msg (Input i) =
+    Input { i | onBlur = Just msg }
+
+
 withStyle : (Config Standard -> Config Standard) -> Input msg -> Input msg
 withStyle fn (Input i) =
     Input { i | style = fn i.style }
@@ -279,6 +309,34 @@ view (Input i) =
                 Nothing ->
                     []
 
+        onBlurAttr =
+            case i.onBlur of
+                Just msg ->
+                    [ Html.Events.onBlur msg ]
+
+                Nothing ->
+                    []
+
+        onKeyDownAttr =
+            case i.onKeyDown of
+                Just handler ->
+                    [ Html.Events.preventDefaultOn "keydown"
+                        (Json.Decode.field "key" Json.Decode.string
+                            |> Json.Decode.andThen
+                                (\key ->
+                                    case handler key of
+                                        Just msg ->
+                                            Json.Decode.succeed ( msg, True )
+
+                                        Nothing ->
+                                            Json.Decode.fail "unhandled key"
+                                )
+                        )
+                    ]
+
+                Nothing ->
+                    []
+
         disabledAttr =
             [ Html.Attributes.disabled i.disabled ]
 
@@ -295,7 +353,7 @@ view (Input i) =
 
         inputEl =
             Html.input
-                (classAttr :: Config.toStyleAttributes i.style ++ typeAttr :: disabledAttr ++ idAttr ++ autofocusAttr ++ placeholderAttr ++ valueAttr ++ onInputAttr ++ onChangeAttr)
+                (classAttr :: Config.toStyleAttributes i.style ++ typeAttr :: disabledAttr ++ idAttr ++ autofocusAttr ++ placeholderAttr ++ valueAttr ++ onInputAttr ++ onChangeAttr ++ onBlurAttr ++ onKeyDownAttr)
                 []
     in
     case i.label of

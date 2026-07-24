@@ -2,6 +2,7 @@ module Component.InputTest exposing (suite)
 
 import Expect
 import Html.Attributes
+import Json.Encode as Encode
 import Tebru.Component.Input as Input
 import Tebru.Theme.Border as Border
 import Test exposing (Test, describe, test)
@@ -34,6 +35,38 @@ suite =
                     |> Query.fromHtml
                     |> Event.simulate (Event.input "hello")
                     |> Event.expect "hello"
+        , test "onKeyDownPreventDefault fires and preventDefaults a handled key" <|
+            \_ ->
+                Input.default
+                    |> Input.onKeyDownPreventDefault
+                        (\key ->
+                            if key == "Enter" then
+                                Just "committed"
+
+                            else
+                                Nothing
+                        )
+                    |> Input.view
+                    |> Query.fromHtml
+                    |> Event.simulate (Event.custom "keydown" (Encode.object [ ( "key", Encode.string "Enter" ) ]))
+                    |> Event.expectPreventDefault
+        , test "onBlur fires when the input loses focus" <|
+            \_ ->
+                Input.default
+                    |> Input.onBlur "blurred"
+                    |> Input.view
+                    |> Query.fromHtml
+                    |> Event.simulate Event.blur
+                    |> Event.expect "blurred"
+        , test "onKeyDownPreventDefault leaves unhandled keys completely untouched" <|
+            \_ ->
+                Input.default
+                    |> Input.onKeyDownPreventDefault (\_ -> Nothing)
+                    |> Input.view
+                    |> Query.fromHtml
+                    |> Event.simulate (Event.custom "keydown" (Encode.object [ ( "key", Encode.string "a" ) ]))
+                    |> Event.toResult
+                    |> Expect.err
         , test "default styles the placeholder with the muted text token" <|
             \_ ->
                 Input.default
